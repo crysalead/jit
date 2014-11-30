@@ -105,18 +105,4 @@ class Patchers {
         return Parser::unparse($nodes);
     }
 
-    /**
-     * Run backtrace patchers.
-     *
-     * @param  string $path The path of the file.
-     * @return array        The modified debug backtrace.
-     */
-    public function processBacktrace($options, $backtrace)
-    {
-        foreach ($this->_patchers as $patcher) {
-            $backtrace = $patcher->processBacktrace($options, $backtrace);
-        }
-        return $backtrace;
-    }
-
 }

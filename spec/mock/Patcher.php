@@ -40,22 +40,4 @@ class Patcher
         return $node;
     }
 
-    /**
-     * The JIT backtrace patcher (make backtrace ignore inserted closure).
-     *
-     * @see kahlan\analysis\Debugger::normalize()
-     *
-     * @param  array $options   Format for outputting stack trace.
-     * @param  array $backtrace The backtrace array.
-     * @return array The patched backtrace.
-     */
-    public function processBacktrace($options, $backtrace)
-    {
-        $args = func_get_args();
-        $self = isset($this) ? $this : get_called_class();
-        if ($pointcut = Pointcut::before(__METHOD__, $self, $args)) {
-            return $pointcut($self, $args);
-        }
-        return $backtrace;
-    }
 }
