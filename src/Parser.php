@@ -263,10 +263,15 @@ class Parser
     protected function _traitNode()
     {
         $this->_codeNode();
-        $body = $this->_stream->current() . $this->_stream->next([';', '{']);
+
+        $token = $this->_stream->current(true);
+        $body = $token[1];
+        $body .= $this->_stream->skipWhitespaces();
+        $body .= $name = $this->_stream->current();
+        $body .= $this->_stream->next([';', '{']);
         $this->_states['body'] .= $body;
         $node = new BlockDef($body, 'trait');
-        $node->name = substr($body, 0, -1);
+        $node->name = $name;
         return $this->_states['current'] = $this->_contextualize($node);
     }
 
@@ -276,10 +281,14 @@ class Parser
     protected function _interfaceNode()
     {
         $this->_codeNode();
-        $body = $this->_stream->current() . $this->_stream->next(['{']);
+        $token = $this->_stream->current(true);
+        $body = $token[1];
+        $body .= $this->_stream->skipWhitespaces();
+        $body .= $name = $this->_stream->current();
+        $body .= $this->_stream->next(['{']);
         $this->_states['body'] .= $body;
         $node = new BlockDef($body, 'interface');
-        $node->name = substr($body, 0, -1);
+        $node->name = $name;
         return $this->_states['current'] = $this->_contextualize($node);
     }
 
