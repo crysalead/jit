@@ -41,6 +41,34 @@ class Interceptor {
     protected $_findFile = 'findFile';
 
     /**
+     * Method name for adding a set of PSR-0 directories.
+     *
+     * @var string
+     */
+    protected $_add = 'add';
+
+    /**
+     * Method name for adding a set of PSR-4 directories.
+     *
+     * @var string
+     */
+    protected $_addPsr4 = 'addPsr4';
+
+    /**
+     * Method name for adding a set of PSR-0 directories.
+     *
+     * @var string
+     */
+    protected $_getPrefixes = 'getPrefixes';
+
+    /**
+     * Method name for adding a set of PSR-4 directories.
+     *
+     * @var string
+     */
+    protected $_getPrefixesPsr4 = 'getPrefixesPsr4';
+
+    /**
      * The patchers container.
      *
      * @var object
@@ -91,8 +119,6 @@ class Interceptor {
             'findFile'        => 'findFile',
             'add'             => 'add',
             'addPsr4'         => 'addPsr4',
-            'addClassMap'     => 'addClassMap',
-            'getClassMap'     => 'getClassMap',
             'getPrefixes'     => 'getPrefixes',
             'getPrefixesPsr4' => 'getPrefixesPsr4',
             'watch'           => [],
@@ -103,6 +129,10 @@ class Interceptor {
         $this->_patchers = new Patchers();
         $this->_loadClass = $options['loadClass'];
         $this->_findFile = $options['findFile'];
+        $this->_add = $options['add'];
+        $this->_addPsr4 = $options['addPsr4'];
+        $this->_getPrefixes = $options['getPrefixes'];
+        $this->_getPrefixesPsr4 = $options['getPrefixesPsr4'];
         $this->_cachePath = rtrim($options['cachePath'], DS);
         $this->_exclude = (array) $options['exclude'];
         $this->_exclude[] = 'jit\\';
@@ -462,6 +492,10 @@ class Interceptor {
     public function __call($method, $params)
     {
         $original = static::originalInstance();
+        $attribute = "_{$method}";
+        if (isset($this->$attribute)) {
+            $method = $this->$attribute;
+        }
         return call_user_func_array([$original, $method], $params);
     }
 
@@ -472,9 +506,11 @@ class Interceptor {
      */
     public function getPrefixes() {
         $ds = DIRECTORY_SEPARATOR;
+        $getPrefixes = $this->_getPrefixes;
+        $getPrefixesPsr4 = $this->_getPrefixesPsr4;
         $original = static::originalInstance();
-        $paths = $original->getPrefixesPsr4();
-        foreach ($original->getPrefixes() as $namespace => $dirs) {
+        $paths = $getPrefixesPsr4 ? $original->{$getPrefixesPsr4}() : [];
+        foreach ($original->{$getPrefixes}() as $namespace => $dirs) {
             foreach ($dirs as $key => $dir) {
                 $paths[$namespace][$key] = $dir . $ds . trim(strtr($namespace, '\\', $ds), $ds);
             }

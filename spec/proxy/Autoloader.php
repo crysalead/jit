@@ -166,4 +166,24 @@ class Autoloader extends \Composer\Autoload\ClassLoader
 
         return $this->_composer->getFallbackDirsPsr4();
     }
+
+    public function __call($method, $args)
+    {
+        $self = isset($this) ? $this : get_called_class();
+        $class = isset($this) ? get_class($this) : get_called_class();
+        if ($pointcut = Pointcut::before("{$class}::{$method}", $self, $args)) {
+            return $pointcut($self, $args);
+        }
+    }
+
+    public function getPrefixesCustom()
+    {
+        $args = func_get_args();
+        $self = isset($this) ? $this : get_called_class();
+        if ($pointcut = Pointcut::before(__METHOD__, $self, $args)) {
+            return $pointcut($self, $args);
+        }
+
+        return [];
+    }
 }

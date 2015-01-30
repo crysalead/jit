@@ -71,6 +71,39 @@ describe("Interceptor", function() {
             expect($message)->toBe("The loader option need to be a valid autoloader.");
         });
 
+        it("allows to configure the autoloader method", function() {
+
+            $interceptor = Interceptor::patch([
+                'cachePath' => $this->cachePath,
+                'loadClass' => 'loadClassCustom',
+            ]);
+
+            expect($interceptor->loader()[1])->toBe('loadClassCustom');
+
+        });
+
+        it("throws an exception if the autoloader has already been patched", function() {
+
+            $interceptor = Interceptor::patch([
+                'cachePath'       => $this->cachePath,
+                //'findFile'        => 'findFileCustom',
+                'add'             => 'addCustom',
+                'addPsr4'         => 'addPsr4Custom',
+                'getPrefixes'     => 'getPrefixesCustom',
+                'getPrefixesPsr4' => 'getPrefixesPsr4Custom',
+            ]);
+
+            expect($this->autoloader)->toReceive('addCustom')->with('namespace', 'file/path');
+            expect($this->autoloader)->toReceive('addPsr4Custom')->with('namespace', 'file/path');
+            expect($this->autoloader)->toReceive('getPrefixesCustom');
+            expect($this->autoloader)->toReceive('getPrefixesPsr4Custom');
+
+            $interceptor->add('namespace', 'file/path');
+            $interceptor->addPsr4('namespace', 'file/path');
+            $interceptor->getPrefixes();
+            $interceptor->getPrefixesPsr4();
+        });
+
     });
 
     describe("::unpatch()", function() {
@@ -422,7 +455,7 @@ describe("Interceptor", function() {
 
             expect($this->autoloader)->toReceive('getClassMap');
 
-            $actual = $interceptor->getClassMap();
+            $interceptor->getClassMap();
 
         });
 
