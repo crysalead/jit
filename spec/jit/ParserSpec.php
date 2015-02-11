@@ -92,6 +92,20 @@ describe("Parser", function() {
 
         });
 
+        it("parses uses", function() {
+
+            $filename = 'spec/fixture/parser/Uses';
+            $parsed = Parser::parse(file_get_contents($filename . '.php'));
+            expect($parsed->uses)->toBe([
+                'A' => 'kahlan\A',
+                'B' => 'kahlan\B',
+                'C' => 'kahlan\C',
+                'F' => 'kahlan\E',
+                'StandardClass' => 'stdClass'
+            ]);
+
+        });
+
     });
 
 });

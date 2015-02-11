@@ -63,7 +63,9 @@ class Parser
             'brace'      => 0
         ];
         $this->_states = $config + $defaults;
-        $this->_root = $this->_states['current'] = new NodeDef('', 'file');
+        $node = new BlockDef('', 'file');
+        $node->hasMethods = false;
+        $this->_root = $this->_states['current'] = $node->namespace = $node;
     }
 
     /**
