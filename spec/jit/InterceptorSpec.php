@@ -445,6 +445,24 @@ describe("Interceptor", function() {
 
         });
 
+        it("gives precedence to files", function() {
+
+            $interceptor = Interceptor::patch(['cachePath' => $this->cachePath]);
+
+            $expected = realpath('spec/fixture/interceptor/ClassA.php');
+            expect($interceptor->findPath('spec\fixture\interceptor\ClassA'))->toBe($expected);
+
+        });
+
+        it("forces the returned path to be a directory", function() {
+
+            $interceptor = Interceptor::patch(['cachePath' => $this->cachePath]);
+
+            $expected = realpath('spec/fixture/interceptor/ClassA');
+            expect($interceptor->findPath('spec\fixture\interceptor\ClassA', true))->toBe($expected);
+
+        });
+
     });
 
     describe("->__call()", function() {

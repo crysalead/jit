@@ -521,9 +521,11 @@ class Interceptor {
     /**
      * Returns the path of a namespace or fully namespaced class name.
      *
-     * @return string
+     * @param  string      $namespace A namespace.
+     * @param  boolean     $forceDir  Only consider directories paths.
+     * @return string|null            Returns the found path or `null` if not path is found.
      */
-    public function findPath($namespace)
+    public function findPath($namespace, $forceDir = false)
     {
         $loader = static::originalInstance();
 
@@ -531,21 +533,39 @@ class Interceptor {
         $logicalPath = trim(strtr($namespace, '\\', DIRECTORY_SEPARATOR), DIRECTORY_SEPARATOR);
 
         foreach ($paths as $prefix => $dirs) {
-            if (strpos($namespace, $prefix) === 0) {
-                foreach ($dirs as $dir) {
-                    $path = $dir . DIRECTORY_SEPARATOR . substr($logicalPath, strlen($prefix));
+            if (strpos($namespace, $prefix) !== 0) {
+                continue;
+            }
+            foreach ($dirs as $dir) {
+                $root = $dir . DIRECTORY_SEPARATOR . substr($logicalPath, strlen($prefix));
 
-                    if (file_exists($file = $path . '.php')) {
-                        return $file ;
-                    }
-                    if (file_exists($file = $path . '.hh')) {
-                        return $file;
-                    }
-                    if (is_dir($path)) {
-                        return $path;
-                    }
+                if ($path = $this->_path($root, $forceDir)) {
+                    return $path;
                 }
             }
+        }
+    }
+
+    /**
+     * Build full path according to a root path.
+     *
+     * @param  string      $path      A root path.
+     * @param  boolean     $forceDir  Only consider directories paths.
+     * @return string|null            Returns the found path or `null` if not path is found.
+     */
+    protected function _path($path, $forceDir)
+    {
+        if ($forceDir) {
+            return is_dir($path) ? $path : null;
+        }
+        if (file_exists($file = $path . '.php')) {
+            return $file ;
+        }
+        if (file_exists($file = $path . '.hh')) {
+            return $file;
+        }
+        if (is_dir($path)) {
+            return $path;
         }
     }
 }
