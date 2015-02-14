@@ -534,14 +534,15 @@ class Interceptor {
             if (strpos($namespace, $prefix) === 0) {
                 foreach ($dirs as $dir) {
                     $path = $dir . DIRECTORY_SEPARATOR . substr($logicalPath, strlen($prefix));
-                    if (is_dir($path)) {
-                        return $path;
-                    }
+
                     if (file_exists($file = $path . '.php')) {
                         return $file ;
                     }
                     if (file_exists($file = $path . '.hh')) {
                         return $file;
+                    }
+                    if (is_dir($path)) {
+                        return $path;
                     }
                 }
             }
