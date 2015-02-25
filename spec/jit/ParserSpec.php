@@ -5,6 +5,20 @@ use jit\Parser;
 
 describe("Parser", function() {
 
+    beforeEach(function() {
+        $this->flattenTree = function($nodes, $self) {
+            $result = [] ;
+            foreach ($nodes as $node) {
+                if (count($node->tree)) {
+                    $result = array_merge($result, $self->flattenTree($node->tree, $self));
+                } else {
+                    $result[] = $node;
+                }
+            }
+            return $result;
+        };
+    });
+
     describe("->parse()", function() {
 
         it("parses consistently", function() {
@@ -38,6 +52,28 @@ describe("Parser", function() {
                     ]);
                 }
             }
+        });
+
+        it("correctly populate the `->inPhp` attribute", function() {
+
+            $sample = file_get_contents('spec/fixture/parser/Sample.php');
+            $root = Parser::parse($sample);
+            $plain = [];
+
+            foreach ($this->flattenTree($root->tree, $this) as $node) {
+                if(!$node->inPhp) {
+                    $plain[] = (string) $node;
+                }
+            }
+
+            expect($plain)->toBe([
+                "<?php\n",
+                "?>\n",
+                "\n<i> Hello World </i>\n\n",
+                "<?php\n",
+                "?>\n",
+                "<?php\n"
+            ]);
         });
 
     });

@@ -29,7 +29,6 @@ class Parser
      *
      * [
      *    'php'        => false,  // Indicate if the parser is in a PHP block.
-     *    'open'       => false,  // Indicate if the parser parsed an open tag.
      *    'class'      => false,  // Indicate if the parser is in a PHP class.
      *    'lines'      => false,  // Indicate if the parser need to process line mathing.
      *    'num'        => 0,      // Current line number.
@@ -54,7 +53,6 @@ class Parser
     {
         $defaults = [
             'php'        => false,
-            'open'       => false,
             'lines'      => 0,
             'num'        => 0,
             'visibility' => [],
@@ -86,15 +84,15 @@ class Parser
                 case T_OPEN_TAG:
                 case T_OPEN_TAG_WITH_ECHO:
                     $this->_codeNode();
-                    $this->_states['open'] = true;
                     $this->_states['body'] .= $token[1];
                     $this->_codeNode('open');
+                    $this->_states['php'] = true;
                 break;
                 case T_CLOSE_TAG:
                     $this->_codeNode();
+                    $this->_states['php'] = false;
                     $this->_states['body'] .= $token[1];
                     $this->_codeNode('close');
-                    $this->_states['open'] = false;
                 break;
                 case T_DOC_COMMENT:
                 case T_COMMENT:
@@ -431,7 +429,7 @@ class Parser
      */
     protected function _codeType()
     {
-        if ($this->_states['open']) {
+        if ($this->_states['php']) {
             return $this->_states['current']->hasMethods ? 'attribute' : 'code';
         }
         return 'plain';
@@ -483,7 +481,6 @@ class Parser
         $this->_assignLines($node);
 
         $node->inPhp = $this->_states['php'];
-        $this->_states['php'] = $this->_states['open'];
         $this->_states['body'] = '';
         return $node;
     }
