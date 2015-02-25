@@ -22,18 +22,23 @@ describe("Parser", function() {
     describe("->parse()", function() {
 
         it("parses consistently", function() {
+
             $sample = file_get_contents('spec/fixture/parser/Sample.php');
             $parsed = Parser::parse($sample);
             expect(Parser::unparse($parsed))->toBe($sample);
+
         });
 
         it("parses syntaxically broken use statement and doesn't crash", function() {
+
             $code = "<?php use MyClass?>";
             $parsed = Parser::parse($code);
             expect(Parser::unparse($parsed))->toBe($code);
+
         });
 
         it("parses functions", function() {
+
             $sample = file_get_contents('spec/fixture/parser/Function.php');
             $root = Parser::parse($sample);
             foreach ($root->tree as $node) {
@@ -52,15 +57,18 @@ describe("Parser", function() {
                     ]);
                 }
             }
+
         });
 
-        it("parses PHP directly with `'php'` is set to true", function() {
+        it("parses PHP directly when the `'php'` option is set to true", function() {
+
             $code = "namespace MyNamespace;";
             $root = Parser::parse($code, ['php' => true]);
             $nodes = $this->flattenTree($root->tree, $this);
             $namespace = current($nodes);
             expect($namespace->type)->toBe('namespace');
             expect(Parser::unparse($root))->toBe($code);
+
         });
 
         it("correctly populate the `->inPhp` attribute", function() {
