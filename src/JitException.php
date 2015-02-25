@@ -3,6 +3,5 @@ namespace jit;
 
 class JitException extends \Exception
 {
-	protected $code = 500;
-
+    protected $code = 500;
 }
