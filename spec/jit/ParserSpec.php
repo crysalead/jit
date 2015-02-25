@@ -24,13 +24,13 @@ describe("Parser", function() {
         it("parses consistently", function() {
             $sample = file_get_contents('spec/fixture/parser/Sample.php');
             $parsed = Parser::parse($sample);
-            $this->expect(Parser::unparse($parsed))->toBe($sample);
+            expect(Parser::unparse($parsed))->toBe($sample);
         });
 
         it("parses syntaxically broken use statement and doesn't crash", function() {
             $code = "<?php use MyClass?>";
             $parsed = Parser::parse($code);
-            $this->expect(Parser::unparse($parsed))->toBe($code);
+            expect(Parser::unparse($parsed))->toBe($code);
         });
 
         it("parses functions", function() {
@@ -93,7 +93,7 @@ describe("Parser", function() {
 
             $filename = 'spec/fixture/parser/Sample';
             $parsed = Parser::debug(file_get_contents($filename . '.php'));
-            $this->expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
 
         });
 
@@ -101,7 +101,7 @@ describe("Parser", function() {
 
             $filename = 'spec/fixture/parser/NoNamespace';
             $parsed = Parser::debug(file_get_contents($filename . '.php'));
-            $this->expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
 
         });
 
@@ -109,7 +109,7 @@ describe("Parser", function() {
 
             $filename = 'spec/fixture/parser/Heredoc';
             $parsed = Parser::debug(file_get_contents($filename . '.php'));
-            $this->expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
 
         });
 
@@ -117,7 +117,7 @@ describe("Parser", function() {
 
             $filename = 'spec/fixture/parser/String';
             $parsed = Parser::debug(file_get_contents($filename . '.php'));
-            $this->expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
 
         });
 
@@ -125,7 +125,7 @@ describe("Parser", function() {
 
             $filename = 'spec/fixture/parser/Closure';
             $parsed = Parser::debug(file_get_contents($filename . '.php'));
-            $this->expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
 
         });
 
@@ -133,7 +133,7 @@ describe("Parser", function() {
 
             $filename = 'spec/fixture/parser/Switch';
             $parsed = Parser::debug(file_get_contents($filename . '.php'));
-            $this->expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
 
         });
 
