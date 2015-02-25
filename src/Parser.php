@@ -76,7 +76,7 @@ class Parser
     protected function _parser($content, $lines = false)
     {
         $this->_initLines($content);
-        $this->_stream = new TokenStream(['source' => $content]);
+        $this->_stream = new TokenStream(['source' => $content, 'wrap' => $this->_states['php']]);
 
         while ($token = $this->_stream->current(true)) {
             $current = $this->_states['current'];

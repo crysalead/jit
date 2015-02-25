@@ -54,6 +54,15 @@ describe("Parser", function() {
             }
         });
 
+        it("parses PHP directly with `'php'` is set to true", function() {
+            $code = "namespace MyNamespace;";
+            $root = Parser::parse($code, ['php' => true]);
+            $nodes = $this->flattenTree($root->tree, $this);
+            $namespace = current($nodes);
+            expect($namespace->type)->toBe('namespace');
+            expect(Parser::unparse($root))->toBe($code);
+        });
+
         it("correctly populate the `->inPhp` attribute", function() {
 
             $sample = file_get_contents('spec/fixture/parser/Sample.php');
