@@ -1,6 +1,9 @@
 <?php
 namespace jit;
 
+use FilesystemIterator;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 use Composer\Autoload\ClassLoader;
 
 class Interceptor {
@@ -122,7 +125,8 @@ class Interceptor {
             'getPrefixes'     => 'getPrefixes',
             'getPrefixesPsr4' => 'getPrefixesPsr4',
             'watch'           => [],
-            'cachePath'       => rtrim(sys_get_temp_dir(), DS) . DS . 'jit'
+            'cachePath'       => rtrim(sys_get_temp_dir(), DS) . DS . 'jit',
+            'clearCache'      => false
         ];
         $options += $defaults;
         $this->_originalLoader = $options['originalLoader'];
@@ -137,6 +141,10 @@ class Interceptor {
         $this->_exclude = (array) $options['exclude'];
         $this->_exclude[] = 'jit\\';
         $this->_include = (array) $options['include'];
+
+        if ($options['clearCache']) {
+            $this->clearCache();
+        }
 
         if ($options['watch']) {
             $this->watch($options['watch']);
@@ -467,6 +475,27 @@ class Interceptor {
     public function cachePath()
     {
         return rtrim($this->_cachePath);
+    }
+
+    /**
+     * Clear the cache.
+     */
+    public function clearCache()
+    {
+        $cachePath = $this->cachePath();
+
+        if (!file_exists($cachePath)) {
+            return;
+        }
+
+        $dir = new RecursiveDirectoryIterator($cachePath, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach($files as $file) {
+            $path = $file->getRealPath();
+            $file->isDir() ? rmdir($path) : unlink($path);
+        }
+        rmdir($cachePath);
     }
 
     /**

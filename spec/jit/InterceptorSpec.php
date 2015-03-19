@@ -176,7 +176,20 @@ describe("Interceptor", function() {
 
     describe("->__construct()", function() {
 
-        it("initialize watched files if passed to the constructor", function() {
+        it("clear caches is  passed to the constructor", function() {
+
+            touch($this->cachePath . DS . 'CachedFile.php');
+
+            $this->interceptor = Interceptor::patch([
+                'cachePath'  => $this->cachePath,
+                'clearCache' => true
+            ]);
+
+            expect(file_exists($this->cachePath . DS . 'CachedFile.php'))->toBe(false);
+
+        });
+
+        it("initializes watched files if passed to the constructor", function() {
             $this->temp = Dir::tempnam(null, 'cache');
 
             touch($this->temp . DS . 'watched1.php');
@@ -683,6 +696,38 @@ describe("Interceptor", function() {
 
                 expect($this->interceptor->cached($this->temp . DS . 'CachedClass.php'))->toBe(false);
             });
+
+        });
+
+    });
+
+    describe("->clearCache()", function() {
+
+        beforeEach(function() {
+            $this->customCachePath = Dir::tempnam(null, 'cache');
+            $this->interceptor = Interceptor::patch(['cachePath' => $this->customCachePath]);
+
+            $this->temp = Dir::tempnam(null, 'cache');
+            $this->interceptor->cache($this->temp . DS . 'CachedClass1.php', '');
+            $this->interceptor->cache($this->temp . DS . 'nestedDir/CachedClass2.php', '');
+        });
+
+        afterEach(function() {
+            Dir::remove($this->temp);
+        });
+
+        it("clears the cache", function() {
+
+            $this->interceptor->clearCache();
+            expect(file_exists($this->customCachePath))->toBe(false);
+
+        });
+
+        it("bails out if the cache has already been cleared", function() {
+
+            $this->interceptor->clearCache();
+            $this->interceptor->clearCache();
+            expect(file_exists($this->customCachePath))->toBe(false);
 
         });
 
