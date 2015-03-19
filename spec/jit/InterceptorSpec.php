@@ -176,7 +176,7 @@ describe("Interceptor", function() {
 
     describe("->__construct()", function() {
 
-        it("clear caches is  passed to the constructor", function() {
+        it("clear caches if `'clearCache'` is `true`", function() {
 
             touch($this->cachePath . DS . 'CachedFile.php');
 
