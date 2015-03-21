@@ -11,9 +11,9 @@
     },
     "autoload": {
         "psr-4": {
-			"jit\\": "src/",
-			"jit\\spec\\": "spec/"
-		}
+            "jit\\": "src/",
+            "jit\\spec\\": "spec/"
+        }
     },
     "config": {
         "bin-dir": "bin"
