@@ -100,55 +100,87 @@ describe("Parser", function() {
         it("attaches the correct lines", function() {
 
             $filename = 'spec/fixture/parser/Sample';
-            $parsed = Parser::debug(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
             expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 
         it("parses files with no namespace", function() {
 
             $filename = 'spec/fixture/parser/NoNamespace';
-            $parsed = Parser::debug(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
             expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 
         it("parses heredoc", function() {
 
             $filename = 'spec/fixture/parser/Heredoc';
-            $parsed = Parser::debug(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
             expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 
         it("parses strings", function() {
 
             $filename = 'spec/fixture/parser/String';
-            $parsed = Parser::debug(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
             expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 
         it("parses closures", function() {
 
             $filename = 'spec/fixture/parser/Closure';
-            $parsed = Parser::debug(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
             expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 
         it("parses switch cases", function() {
 
             $filename = 'spec/fixture/parser/Switch';
-            $parsed = Parser::debug(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
             expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 
         it("parses uses", function() {
 
             $filename = 'spec/fixture/parser/Uses';
-            $parsed = Parser::parse(file_get_contents($filename . '.php'));
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::parse($content);
             expect($parsed->uses)->toBe([
                 'A' => 'kahlan\A',
                 'B' => 'kahlan\B',
@@ -156,6 +188,22 @@ describe("Parser", function() {
                 'F' => 'kahlan\E',
                 'StandardClass' => 'stdClass'
             ]);
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
+
+        });
+
+        it("parses static::class", function() {
+
+            $filename = 'spec/fixture/parser/StaticClassKeyword';
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
 
         });
 

@@ -297,8 +297,13 @@ class Parser
      */
     protected function _classNode()
     {
-        $this->_codeNode();
+        // Bails out on `static::class`
+        if (substr($this->_states['body'], -8) === 'static::') {
+            $this->_states['body'] .= 'class';
+            return;
+        }
 
+        $this->_codeNode();
         $token = $this->_stream->current(true);
         $body = $token[1];
         $body .= $this->_stream->skipWhitespaces();
