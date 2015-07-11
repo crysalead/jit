@@ -7,4 +7,9 @@ class StaticClassKeyword
     {
         return static::class;
     }
+
+    public function alternativeSyntax()
+    {
+        return StaticClassKeyword::class;
+    }
 }

@@ -194,7 +194,7 @@ describe("Parser", function() {
 
         });
 
-        it("parses static::class", function() {
+        it("parses ::class syntax", function() {
 
             $filename = 'spec/fixture/parser/StaticClassKeyword';
             $content = file_get_contents($filename . '.php');

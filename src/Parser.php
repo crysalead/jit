@@ -297,8 +297,7 @@ class Parser
      */
     protected function _classNode()
     {
-        // Bails out on `static::class`
-        if (substr($this->_states['body'], -8) === 'static::') {
+        if (substr($this->_states['body'], -2) === '::') { // Bails out on `::class`
             $this->_states['body'] .= 'class';
             return;
         }
