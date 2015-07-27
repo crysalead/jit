@@ -418,7 +418,7 @@ class Parser
     protected function _codeNode($type = null, $coverable = false)
     {
         $body = $this->_states['body'];
-        if (!$body) {
+        if ($body === '') {
             return;
         }
 

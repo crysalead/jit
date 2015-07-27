@@ -149,6 +149,19 @@ describe("Parser", function() {
 
         });
 
+        it("parses char at syntax", function() {
+
+            $filename = 'spec/fixture/parser/CharAtSyntax';
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
+
+        });
+
         it("parses closures", function() {
 
             $filename = 'spec/fixture/parser/Closure';
