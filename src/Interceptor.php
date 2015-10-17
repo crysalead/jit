@@ -431,7 +431,7 @@ class Interceptor {
         if (!$cachePath = $this->cachePath()) {
             throw new JitException('Error, any cache path has been defined.');
         }
-        $path = $cachePath . DS . ltrim($file, DS);
+        $path = $cachePath . DS . ltrim(preg_replace('~:~', '', $file), DS);
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
