@@ -1,6 +1,7 @@
 <?php
 namespace jit;
 
+use Exception;
 use FilesystemIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
@@ -432,9 +433,14 @@ class Interceptor {
             throw new JitException('Error, any cache path has been defined.');
         }
         $path = $cachePath . DS . ltrim(preg_replace('~:~', '', $file), DS);
-        if (!file_exists(dirname($path))) {
+        try {
+            if (!file_exists(dirname($path))) {
+                mkdir(dirname($path), 0755, true);
+            }
+        } catch (Exception $e) {
             mkdir(dirname($path), 0755, true);
         }
+
         file_put_contents($path, $content);
         if ($timestamp) {
             touch($path, $timestamp);
@@ -456,7 +462,11 @@ class Interceptor {
         }
 
         $path = $cache . DS . ltrim($file, DS);
-        if (!file_exists($path)) {
+        try {
+            if (!file_exists($path)) {
+                return false;
+            }
+        } catch (Exception $e) {
             return false;
         }
 
