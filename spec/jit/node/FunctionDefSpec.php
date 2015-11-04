@@ -8,7 +8,6 @@ describe("FunctionDef", function() {
     describe("->argsToParams()", function() {
 
         it("builds a list of params from function arguments", function() {
-            $sample = file_get_contents('spec/fixture/parser/Function.php');
             $node = new FunctionDef();
             $node->args = [
                 '$required',
