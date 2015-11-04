@@ -46,6 +46,7 @@ describe("Parser", function() {
                     expect($node->name)->toBe('myFunction');
                     expect($node->isClosure)->toBe(false);
                     expect($node->isMethod)->toBe(false);
+                    expect($node->isGenerator)->toBe(false);
                     expect($node->parent)->toBe($root);
                     expect($node->args)->toBe([
                         '$required',
@@ -91,6 +92,22 @@ describe("Parser", function() {
                 "?>\n",
                 "<?php\n"
             ]);
+        });
+
+        it("correctly populates the `->isGenerator` attribute", function() {
+
+            $sample = file_get_contents('spec/fixture/parser/Generator.php');
+            $root = Parser::parse($sample);
+            foreach ($root->tree as $node) {
+                if ($node->type === 'function') {
+                    expect($node->name)->toBe('myGenerator');
+                    expect($node->isClosure)->toBe(false);
+                    expect($node->isMethod)->toBe(false);
+                    expect($node->isGenerator)->toBe(true);
+                    expect($node->parent)->toBe($root);
+                }
+            }
+
         });
 
     });

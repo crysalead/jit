@@ -147,8 +147,18 @@ class Parser
                     $this->_functionNode();
                     $buffered = '';
                 break;
+                case T_YIELD:
+                    $parent = $this->_states['current'];
+                    while ($parent && !$parent instanceof FunctionDef) {
+                        $parent = $parent->parent;
+                    }
+                    $parent->isGenerator = true;
+                    $this->_states['body'] .= $token[1];
+                break;
                 case T_VARIABLE:
                     $this->_states['visibility'] = [];
+                    $this->_states['body'] .= $token[1];
+                    break;
                 default:
                     $this->_states['body'] .= $token[1];
                 break;

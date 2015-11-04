@@ -25,6 +25,13 @@ class FunctionDef extends NodeDef
     public $isMethod = false;
 
     /**
+     * Boolean indicating if this function is a generator function.
+     *
+     * @var boolean
+     */
+    public $isGenerator = false;
+
+    /**
      * Boolean indicating the visibilty of the method.
      *
      * @var boolean
