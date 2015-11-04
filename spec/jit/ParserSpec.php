@@ -72,7 +72,7 @@ describe("Parser", function() {
 
         });
 
-        it("correctly populate the `->inPhp` attribute", function() {
+        it("correctly populates the `->inPhp` attribute", function() {
 
             $sample = file_get_contents('spec/fixture/parser/Sample.php');
             $root = Parser::parse($sample);
