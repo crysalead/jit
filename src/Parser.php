@@ -509,9 +509,12 @@ class Parser
         if (!$this->_states['lines']) {
             return;
         }
+        $lines = explode("\n", $content);
+        $nbLines = count($lines);
         if ($this->_states['lines']) {
-            for($i = 0; $i <= substr_count($content, "\n"); $i++) {
+            for($i = 0; $i < $nbLines; $i++) {
                 $this->_root->lines['content'][$i] = [
+                    'body' => $lines[$i],
                     'nodes' => [],
                     'coverable' => false
                 ];
@@ -621,7 +624,6 @@ class Parser
     public static function debug($content)
     {
         $root = is_object($content) ? $content : static::parse($content, ['lines' => true]);
-        $lines = preg_split("~\n~", $content);
         $result = '';
 
         $abbr = [
@@ -652,7 +654,7 @@ class Parser
             $result .= $content['coverable'] ? '*' : ' ';
             $result .= '[' . str_pad(join(',', $types), 19, ' ', STR_PAD_BOTH) . "]";
             $result .= ' ' . str_pad("#{$start} > #{$stop}", 16, ' ') . "|";
-            $result .= $lines[$num] . "\n";
+            $result .= $content['body'] . "\n";
         }
         return $result;
     }
