@@ -1,9 +1,9 @@
 <?php
-namespace jit;
+namespace Lead\Jit;
 
-use jit\node\NodeDef;
-use jit\node\FunctionDef;
-use jit\node\BlockDef;
+use Lead\Jit\Node\NodeDef;
+use Lead\Jit\Node\FunctionDef;
+use Lead\Jit\Node\BlockDef;
 
 /**
  * Crude parser providing some code block structure of PHP files to facilitate analysis.
@@ -78,6 +78,8 @@ class Parser
         $this->_initLines($content);
         $this->_stream = new TokenStream(['source' => $content, 'wrap' => $this->_states['php']]);
 
+        $T_YIELD = defined('HHVM_VERSION') ? 381 : 267;
+
         while ($token = $this->_stream->current(true)) {
             $current = $this->_states['current'];
             switch ($token[0]) {
@@ -147,7 +149,7 @@ class Parser
                     $this->_functionNode();
                     $buffered = '';
                 break;
-                case T_YIELD:
+                case $T_YIELD: // use T_YIELD directly when PHP 5.4 support will be removed.
                     $parent = $this->_states['current'];
                     while ($parent && !$parent instanceof FunctionDef) {
                         $parent = $parent->parent;

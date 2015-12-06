@@ -1,5 +1,5 @@
 <?php
-namespace jit;
+namespace Lead\Jit;
 
 use Exception;
 

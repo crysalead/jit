@@ -1,5 +1,5 @@
 <?php
-namespace jit;
+namespace Lead\Jit;
 
 class JitException extends \Exception
 {

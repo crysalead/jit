@@ -1,5 +1,5 @@
 <?php
-namespace jit;
+namespace Lead\Jit;
 
 use Exception;
 use FilesystemIterator;
@@ -184,6 +184,7 @@ class Interceptor {
     public static function composer()
     {
         $loaders = spl_autoload_functions();
+
         foreach ($loaders as $key => $loader) {
             if (is_array($loader) && ($loader[0] instanceof ClassLoader)) {
                 return $loader;
