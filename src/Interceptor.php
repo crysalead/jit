@@ -408,14 +408,15 @@ class Interceptor {
      * @return bool                Returns `true` if loaded, null otherwise.
      * @throws JitException
      */
-    public function loadFile($file)
+    public function loadFile($filepath)
     {
+        $file = realpath($filepath);
+        if ($file === false) {
+            throw new JitException("Error, the file `'{$filepath}'` doesn't exist.");
+        }
         if ($cached = $this->cached($file)) {
             require $cached;
             return true;
-        }
-        if (!file_exists($file)) {
-            throw new JitException("Error, the file `'{$file}'` doesn't exist.");
         }
         $code = file_get_contents($file);
         $timestamp = filemtime($file);
@@ -535,6 +536,9 @@ class Interceptor {
     {
         $findFile = $this->_findFile;
         $file = static::originalInstance()->{$findFile}($class);
+        if ($file !== false) {
+            $file = realpath($file);
+        }
         return $this->_patchers->findFile($this, $class, $file);
     }
 
@@ -596,7 +600,7 @@ class Interceptor {
                 $root = $dir . DIRECTORY_SEPARATOR . substr($logicalPath, strlen($prefix));
 
                 if ($path = $this->_path($root, $forceDir)) {
-                    return $path;
+                    return realpath($path);
                 }
             }
         }
