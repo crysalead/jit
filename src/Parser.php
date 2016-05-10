@@ -335,10 +335,36 @@ class Parser
         }
         $node = new BlockDef($body, 'class');
         $node->name = $name;
-        $node->extends = $extends;
+        $node->extends = $this->_normalizeClass($extends);
 
         $this->_states['body'] .= $body;
         return $this->_states['current'] = $this->_contextualize($node);
+    }
+
+    /**
+     * Normalizes a class name.
+     *
+     * @param  string $name A class name value.
+     * @return string       The fully namespaced class extends value.
+     */
+    protected function _normalizeClass($name)
+    {
+        if (!$name || $name[0] === '\\') {
+            return $name;
+        }
+        if ($this->_states['uses']) {
+            $tokens = explode('\\', $name, 2);
+            if (isset($this->_states['uses'][$tokens[0]])) {
+                $prefix = $this->_states['uses'][$tokens[0]];
+                return count($tokens) === 2 ? '\\' . $prefix . '\\' . $tokens[1] : '\\' . $prefix;
+            }
+        }
+        $current = $this->_states['current'];
+        $prefix = '\\';
+        if ($current->namespace) {
+            $prefix .= $current->namespace->name . '\\';
+        }
+        return $prefix . $name;
     }
 
     /**
