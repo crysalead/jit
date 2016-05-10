@@ -322,9 +322,14 @@ class Parser
         $body = $token[1];
         $body .= $this->_stream->skipWhitespaces();
         $body .= $name = $this->_stream->current();
-        $body .= $this->_stream->next(['{', T_EXTENDS]);
+        if ($name !== '{') {
+            $body .= $this->_stream->next(['{', T_EXTENDS, T_IMPLEMENTS]);
+        } else {
+            $name = '';
+        }
         $token = $this->_stream->current(true);
         $extends = '';
+        $implements = '';
         if ($token[0] === T_EXTENDS) {
             $body .= $this->_stream->skipWhitespaces();
             $body .= $extends = $this->_stream->skipWhile([T_STRING, T_NS_SEPARATOR]);
@@ -332,10 +337,14 @@ class Parser
             if ($this->_stream->current() !== '{') {
                 $body .= $this->_stream->next('{');
             }
+        } elseif ($token[0] === T_IMPLEMENTS) {
+            $body .= $implements = $this->_stream->next('{');
+            $implements = substr($implements, 0, -1);
         }
         $node = new BlockDef($body, 'class');
         $node->name = $name;
         $node->extends = $this->_normalizeClass($extends);
+        $node->implements = $this->_normalizeImplements($implements);
 
         $this->_states['body'] .= $body;
         return $this->_states['current'] = $this->_contextualize($node);
@@ -365,6 +374,20 @@ class Parser
             $prefix .= $current->namespace->name . '\\';
         }
         return $prefix . $name;
+    }
+
+    /**
+     * Formats an implements string.
+     *
+     * @param  string $implements The implements string.
+     * @return array              The implements array.
+     */
+    protected function _normalizeImplements($implements)
+    {
+        if (!$implements) {
+            return [];
+        }
+        return array_map([$this, '_normalizeClass'], array_map('trim', explode(',', $implements)));
     }
 
     /**
