@@ -462,7 +462,9 @@ class Interceptor {
             mkdir(dirname($path), 0755, true);
         }
 
-        file_put_contents($path, $content);
+        if (file_put_contents($path, $content) === false) {
+            throw new JitException("Unable to create a cached file at `'{$file}'`.");
+        }
         if ($timestamp) {
             touch($path, $timestamp);
         }
