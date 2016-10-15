@@ -2,7 +2,7 @@
 namespace Lead\Jit\Spec\Suite;
 
 use Kahlan\Arg;
-use Kahlan\Plugin\Stub;
+use Kahlan\Plugin\Double;
 
 use Lead\Jit\Patchers;
 
@@ -16,11 +16,11 @@ describe("Patchers", function() {
 
         it("stores a patcher", function() {
 
-            $stub = Stub::create();
-            $this->patchers->add('my_patcher', $stub);
+            $double = Double::instance();
+            $this->patchers->add('my_patcher', $double);
 
             $actual = $this->patchers->get('my_patcher');
-            expect($actual)->toBe($stub);
+            expect($actual)->toBe($double);
 
         });
 
@@ -47,8 +47,8 @@ describe("Patchers", function() {
 
         it("returns `true` for an existing patcher", function() {
 
-            $stub = Stub::create();
-            $this->patchers->add('my_patcher', $stub);
+            $double = Double::instance();
+            $this->patchers->add('my_patcher', $double);
 
             $actual = $this->patchers->exists('my_patcher');
             expect($actual)->toBe(true);
@@ -68,8 +68,8 @@ describe("Patchers", function() {
 
         it("removes a patcher", function() {
 
-            $stub = Stub::create();
-            $this->patchers->add('my_patcher', $stub);
+            $double = Double::instance();
+            $this->patchers->add('my_patcher', $double);
 
             $actual = $this->patchers->exists('my_patcher');
             expect($actual)->toBe(true);
@@ -87,8 +87,8 @@ describe("Patchers", function() {
 
         it("clears all patchers", function() {
 
-            $stub = Stub::create();
-            $this->patchers->add('my_patcher', $stub);
+            $double = Double::instance();
+            $this->patchers->add('my_patcher', $double);
 
             $actual = $this->patchers->exists('my_patcher');
             expect($actual)->toBe(true);
@@ -106,16 +106,16 @@ describe("Patchers", function() {
 
         it("runs `true` when at least one patcher consider a class as patchable", function() {
 
-            $stub1 = Stub::create();
-            Stub::on($stub1)->method('patchable')->andReturn(false);
-            $this->patchers->add('patcher1', $stub1);
+            $double1 = Double::instance();
+            allow($double1)->toReceive('patchable')->andReturn(false);
+            $this->patchers->add('patcher1', $double1);
 
-            $stub2 = Stub::create();
-            $this->patchers->add('patcher2', $stub2);
-            Stub::on($stub2)->method('patchable')->andReturn(true);
+            $double2 = Double::instance();
+            $this->patchers->add('patcher2', $double2);
+            allow($double2)->toReceive('patchable')->andReturn(true);
 
-            expect($stub1)->toReceive('patchable')->with('ClassName');
-            expect($stub2)->toReceive('patchable')->with('ClassName');
+            expect($double1)->toReceive('patchable')->with('ClassName');
+            expect($double2)->toReceive('patchable')->with('ClassName');
 
             expect($this->patchers->patchable('ClassName'))->toBe(true);
 
@@ -123,16 +123,16 @@ describe("Patchers", function() {
 
         it("runs `false` when at no patcher consider a class as patchable", function() {
 
-            $stub1 = Stub::create();
-            Stub::on($stub1)->method('patchable')->andReturn(false);
-            $this->patchers->add('patcher1', $stub1);
+            $double1 = Double::instance();
+            allow($double1)->toReceive('patchable')->andReturn(false);
+            $this->patchers->add('patcher1', $double1);
 
-            $stub2 = Stub::create();
-            $this->patchers->add('patcher2', $stub2);
-            Stub::on($stub2)->method('patchable')->andReturn(false);
+            $double2 = Double::instance();
+            $this->patchers->add('patcher2', $double2);
+            allow($double2)->toReceive('patchable')->andReturn(false);
 
-            expect($stub1)->toReceive('patchable')->with('ClassName');
-            expect($stub2)->toReceive('patchable')->with('ClassName');
+            expect($double1)->toReceive('patchable')->with('ClassName');
+            expect($double2)->toReceive('patchable')->with('ClassName');
 
             expect($this->patchers->patchable('ClassName'))->toBe(false);
 
@@ -144,11 +144,11 @@ describe("Patchers", function() {
 
         it("runs a method on all patchers", function() {
 
-            $stub1 = Stub::create();
-            $this->patchers->add('patcher1', $stub1);
+            $double1 = Double::instance();
+            $this->patchers->add('patcher1', $double1);
 
-            $stub2 = Stub::create();
-            $this->patchers->add('patcher2', $stub2);
+            $double2 = Double::instance();
+            $this->patchers->add('patcher2', $double2);
 
             $path = 'tmp/hello_world.php';
             $code = "<?php\necho 'Hello World!';\n";
@@ -157,8 +157,8 @@ describe("Patchers", function() {
                 return $code === (string) $actual;
             };
 
-            expect($stub1)->toReceive('process')->with(Arg::toMatch($matcher), $path);
-            expect($stub2)->toReceive('process')->with(Arg::toMatch($matcher), $path);
+            expect($double1)->toReceive('process')->with(Arg::toMatch($matcher), $path);
+            expect($double2)->toReceive('process')->with(Arg::toMatch($matcher), $path);
 
             $this->patchers->process($code, $path);
 
@@ -176,23 +176,23 @@ describe("Patchers", function() {
     describe("->findFile()", function() {
 
         beforeEach(function() {
-            $this->loader = Stub::create();
-            $this->class = Stub::classname();
+            $this->loader = Double::instance();
+            $this->class = Double::classname();
             $this->file = 'some/path/file.php';
 
-            $this->stub1 = Stub::create();
+            $this->stub1 = Double::instance();
             $this->patchers->add('patcher1', $this->stub1);
 
-            $this->stub2 = Stub::create();
+            $this->stub2 = Double::instance();
             $this->patchers->add('patcher2', $this->stub2);
 
             $file = $this->file;
 
-            Stub::on($this->stub1)->method('findFile', function() use ($file) {
+            allow($this->stub1)->toReceive('findFile')->andRun(function() use ($file) {
                 return $file;
             });
 
-            Stub::on($this->stub2)->method('findFile', function() use ($file) {
+            allow($this->stub2)->toReceive('findFile')->andRun(function() use ($file) {
                 return $file;
             });
         });
@@ -211,7 +211,7 @@ describe("Patchers", function() {
 
             $path = 'new/path/file.php';
 
-            Stub::on($this->stub2)->method('findFile', function() use ($path) {
+            allow($this->stub2)->toReceive('findFile')->andRun(function() use ($path) {
                 return $path;
             });
 

@@ -6,14 +6,14 @@ use Lead\Jit\Patchers;
 use Lead\Jit\Interceptor;
 
 use Kahlan\Dir\Dir;
-use Kahlan\Plugin\Stub;
+use Kahlan\Plugin\Double;
 
 use Lead\Jit\Spec\Proxy\Autoloader;
 use Lead\Jit\Spec\Mock\Patcher;
 
 describe("Interceptor", function() {
 
-    before(function() {
+    beforeAll(function() {
         $this->composer = Interceptor::composer();
         skipIf(!$this->composer);
 
@@ -29,7 +29,7 @@ describe("Interceptor", function() {
         Interceptor::unpatch();
     });
 
-    after(function() {
+    afterAll(function() {
         spl_autoload_register($this->composer);
         spl_autoload_unregister([$this->autoloader, 'loadClass']);
         Dir::remove($this->cachePath);
@@ -252,10 +252,10 @@ describe("Interceptor", function() {
 
             it("delegates find to patchers", function() {
 
-                Stub::on($this->patcher1)->method('findFile', function($interceptor, $class, $file) {
+                allow($this->patcher1)->toReceive('findFile')->andRun(function($interceptor, $class, $file) {
                     return $file . '1';
                 });
-                Stub::on($this->patcher2)->method('findFile', function($interceptor, $class, $file) {
+                allow($this->patcher2)->toReceive('findFile')->andRun(function($interceptor, $class, $file) {
                     return $file . '2';
                 });
 
