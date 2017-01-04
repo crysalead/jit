@@ -378,6 +378,18 @@ describe("Parser", function() {
 
         });
 
+        it("parses alternative control structures as dead code", function () {
+
+            $filename = 'spec/Fixture/Parser/AlternativeControlStructures';
+            $content = file_get_contents($filename . '.php');
+
+            $parsed = Parser::debug($content);
+            expect($parsed)->toBe(file_get_contents($filename . '.txt'));
+
+            $parsed = Parser::parse($content);
+            expect(Parser::unparse($parsed))->toBe($content);
+        });
+
     });
 
 });
