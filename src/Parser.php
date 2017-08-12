@@ -56,7 +56,8 @@ class Parser
             'num'        => 0,
             'visibility' => [],
             'uses'       => [],
-            'body'       => ''
+            'body'       => '',
+            'path'       => ''
         ];
         $this->_states = $config + $defaults;
         $node = new BlockDef('', 'file');
@@ -68,10 +69,9 @@ class Parser
      * Parsing a file into nested nodes.
      *
      * @param  string  $content A file.
-     * @param  boolean $lines   Indicate if the parser need to process line mathing.
      * @return object           The parsed file node.
      */
-    protected function _parser($content, $lines = false)
+    protected function _parser($content)
     {
         $this->_initLines($content);
         $this->_stream = new TokenStream(['source' => $content, 'wrap' => $this->_states['php']]);
@@ -84,6 +84,12 @@ class Parser
         while ($token = $this->_stream->current(true)) {
             $current = $this->_states['current'];
             switch ($token[0]) {
+                case T_DIR:
+                    $this->_states['body'] .= "'" . dirname($this->_states['path']) . "'";
+                    break;
+                case T_FILE:
+                    $this->_states['body'] .= "'" . $this->_states['path'] . "'";
+                    break;
                 case T_OPEN_TAG:
                 case T_OPEN_TAG_WITH_ECHO:
                     $this->_codeNode();
@@ -716,11 +722,11 @@ class Parser
     }
 
     /**
-     * Parsing a file into nested nodes.
+     * Parsing a content into nested nodes.
      *
-     * @param  string  The php string to parse.
-     * @param  boolean Indicate if the parser need to process line mathing.
-     * @return object  the parsed file node.
+     * @param  string $content The php string to parse.
+     * @param  array  $config  The parse config array.
+     * @return object          The parsed file node.
      */
     public static function parse($content, $config = [])
     {

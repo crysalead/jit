@@ -111,6 +111,15 @@ describe("Parser", function() {
 
         });
 
+         it("rebases __DIR__ and __FILE__ magic constants", function () {
+
+            $nodes = Parser::parse(file_get_contents('spec/Fixture/Parser/Rebase.php'), ['path' => '/the/original/path/Rebase.php']);
+            $expected = file_get_contents('spec/Fixture/Parser/RebaseProcessed.php');
+            $actual = Parser::unparse($nodes);
+            expect($actual)->toBe($expected);
+
+        });
+
     });
 
     describe("->debug()", function() {
