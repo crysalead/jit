@@ -370,7 +370,7 @@ describe("Parser", function() {
 
         it("parses declare", function() {
 
-            $filename = 'spec/Fixture/Parser/Declare';
+            $filename = 'spec/Fixture/Parser/DeclareStrictTypes';
             $content = file_get_contents($filename . '.php');
 
             $parsed = Parser::debug($content);
@@ -383,7 +383,7 @@ describe("Parser", function() {
 
         it("parses declare as block", function() {
 
-            $filename = 'spec/Fixture/Parser/DeclareAsBlock';
+            $filename = 'spec/Fixture/Parser/DeclareTicksAsBlock';
             $content = file_get_contents($filename . '.php');
 
             $parsed = Parser::debug($content);
